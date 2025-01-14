@@ -1,0 +1,47 @@
+# Given the mapping a = 1, b = 2, ... z = 26, and an encoded message, count the number of ways it can be decoded.
+#
+# For example, the message '111' would give 3, since it could be decoded as 'aaa', 'ka', and 'ak'.
+#
+# You can assume that the messages are decodable. For example, '001' is not allowed.
+
+"""
+    I used the idea of fibonacci, checking the substring to see how many options there are.
+    The message is decodable, so I do not have to check if it is empty or starts with 0.
+    Break Point:
+        If the length is 2 it is either one option or two, example: 10 -> (j), 11 -> (aa, k).
+        Therefore, there is no need to check on length 1.
+    For the rest of the substrings (from len(3) and up):
+        If one of the first three digits are 0 or the first two digits are over 26, there is no extra possibilities over the last substring.
+        For example: 4320 -> 1 | dct, same thing.
+                      320 -> 1 | ct, 32 is over 26 so it cannot create anymore pairs. And even if it was 12, it is not an option to do 12 and 0, so it is still 1.
+                       20 -> 1 | t
+                        0 -> 0 | not valid (and not even checked).
+        Otherwise, the count of the message is the counts from the two previous substrings.
+"""
+
+
+def recursion(mssg):
+
+    if len(mssg) == 2:
+        return (1, 0) if int(mssg) > 26 or mssg[1] == '0' else (2, 1)
+
+    count, prev = recursion(mssg[1:])
+
+    if mssg[0] == '0' or mssg[1] == '0' or mssg[2] == '0' or int(mssg[0] + mssg[1]) > 26:
+        return count, count
+
+    return count + prev, count
+
+
+def decode_message(mssg):
+    return recursion(mssg)[0]
+
+
+print(decode_message('4320'))
+print(decode_message('4321'))
+print(decode_message('1111'))
+print(decode_message('2120'))
+print(decode_message('2121'))
+print(decode_message('1021'))
+print(decode_message('11111'))
+print(decode_message('24321'))
